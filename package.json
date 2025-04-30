@@ -8,12 +8,12 @@
   "ios": "expo start --ios",
   "web": "expo start --web",
   "web-build": "expo export --output-dir docs",
-  "fix-paths": "sed -i '' -e '1s;^;<base href=\"./\">\\\n;' -e 's;src=\"/;src=\"./;g' -e 's;href=\"/;href=\"./;g' docs/index.html",
+  "fix-paths": "sed -i '1s;^;<base href=\"./\">\\n;' docs/index.html && sed -i 's;src=\"/;src=\"./;g' docs/index.html && sed -i 's;href=\"/;href=\"./;g' docs/index.html",
   "predeploy": "npm run web-build && npm run fix-paths",
   "vercel-build": "npm run predeploy",
-  "build": "npm run predeploy",
-  "postbuild": "sed -i '' -e '1i\\\n<base href=\"./\">' docs/index.html && sed -i '' -e 's;src=\"/;src=\"./;g' -e 's;href=\"/;href=\"./;g' docs/index.html"
+  "build": "npm run predeploy"
 },
+
   "dependencies": {
     "@expo-google-fonts/bodoni-moda": "^0.3.0",
     "@react-navigation/native": "^7.1.5",
