@@ -6,12 +6,13 @@
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
-    "web": "expo start --web",
-    "web-build": "expo export --output-dir docs",
-    "fix-paths": "sed -i '' -e '1s;^;<base href=\"./\">\\\n;' -e 's;src=\"/;src=\"./;g' -e 's;href=\"/;href=\"./;g' docs/index.html",
-    "predeploy": "npm run web-build && npm run fix-paths",
+    "web":  "expo start --web",
+    "web-build":  "expo export --output-dir docs",
+    "fix-paths":  "sed -i '' -e '1s;^;<base href=\"./\">\\\n;' -e 's;src=\"/;src=\"./;g' -e 's;href=\"/;href=\"./;g' docs/index.html",
+    "predeploy":  "npm run web-build && npm run fix-paths",
     "vercel-build": "npm run predeploy",
-    "postbuild": "sed -i '' -e '1i\\\n<base href=\"./\">' docs/index.html && sed -i '' -e 's;src=\"/;src=\"./;g' -e 's;href=\"/;href=\"./;g' docs/index.html"
+    "build":       "npm run predeploy",
+    "postbuild":   "sed -i '' -e '1i\\\n<base href=\"./\">' docs/index.html && sed -i '' -e 's;src=\"/;src=\"./;g' -e 's;href=\"/;href=\"./;g' docs/index.html"
   },
   "dependencies": {
     "@expo-google-fonts/bodoni-moda": "^0.3.0",
