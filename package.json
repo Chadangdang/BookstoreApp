@@ -6,7 +6,9 @@
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "build:web": "expo export --platform web --output-dir docs",
+    "postbuild": "sed -i '' -e '1i\\\n<base href=\"./\">' docs/index.html && sed -i '' -e 's;src=\"/;src=\"./;g' -e 's;href=\"/;href=\"./;g' docs/index.html"
   },
   "dependencies": {
     "@expo-google-fonts/bodoni-moda": "^0.3.0",
