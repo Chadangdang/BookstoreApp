@@ -218,7 +218,8 @@ const styles = StyleSheet.create({
                     borderRadius: 16,
                     overflow: 'hidden',
                     elevation: 2,
-                    marginRight: 16,
+                    marginRight: 8,
+                    marginLeft: 8,
                   },
   bookImage:      { width: '100%', height: 160 },
   bookTitle:      {

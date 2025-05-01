@@ -241,7 +241,8 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     elevation: 2,
     paddingBottom: 10,
-    marginRight: 16, // spacing between cards
+    marginRight: 8,
+    marginLeft: 8,
   },
   bookImage: {
     width: '100%',
