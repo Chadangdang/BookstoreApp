@@ -40,11 +40,9 @@ export default function CartScreen() {
 
   const { cart, updateQuantity, removeFromCart, clearCart } = useCart();
 
-  // -- local stock map --
   const [stockMap, setStockMap] = useState<Record<string, number>>({});
 
   useEffect(() => {
-    // fetch up‑to‑date stock for each item in cart
     const fetchStocks = async () => {
       const newMap: Record<string, number> = {};
       await Promise.all(
@@ -61,7 +59,6 @@ export default function CartScreen() {
     fetchStocks();
   }, [cart]);
 
-  // -- search bar state/handler --
   const [search, setSearch] = useState('');
   const handleSearch = () => {
     if (search.trim()) {
@@ -69,7 +66,6 @@ export default function CartScreen() {
     }
   };
 
-  // -- selection logic --
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const toggleSelection = (id: string) => {
     setSelectedItems((prev) =>
@@ -77,28 +73,22 @@ export default function CartScreen() {
     );
   };
 
-  // -- total price for selected --
   const totalPrice = cart
     .filter((item) => selectedItems.includes(item.id))
     .reduce((sum, item) => sum + item.price * item.quantity, 0);
 
-  // -- checkout handler --
   const handleCheckout = async () => {
     try {
-      // 1) figure next order index
       const ordersCol = collection(db, 'orders');
       const existing = await getDocs(ordersCol);
       let nextNum = existing.size + 1;
 
-      // 2) for each selected item
       for (const item of cart) {
         if (!selectedItems.includes(item.id)) continue;
 
-        // a) decrement stock in books
         const bookRef = firestoreDoc(db, 'books', item.id);
         await updateDoc(bookRef, { stock: increment(-item.quantity) });
 
-        // b) write an order doc
         const orderId = 'order' + String(nextNum).padStart(3, '0');
         await setDoc(firestoreDoc(db, 'orders', orderId), {
           bookcode: item.id,
@@ -109,14 +99,12 @@ export default function CartScreen() {
         nextNum++;
       }
 
-      // 3) clear selected from cart
       cart
         .filter((i) => !selectedItems.includes(i.id))
         .forEach((i) => updateQuantity(i.id, i.quantity));
       selectedItems.forEach((id) => removeFromCart(id));
       setSelectedItems([]);
 
-      // 4) navigate to MyBooks
       navigation.navigate('MyBooks');
     } catch (err: any) {
       Alert.alert('Checkout failed', err.message);
@@ -165,7 +153,11 @@ export default function CartScreen() {
           const canPlus = item.quantity < stock;
 
           return (
-            <View style={styles.cartCard}>
+            <TouchableOpacity
+              style={styles.cartCard}
+              onPress={() => navigation.navigate('BookScreen', { book: item })}
+              activeOpacity={0.9}
+            >
               <View style={styles.cardRow}>
                 <Checkbox
                   value={selectedItems.includes(item.id)}
@@ -208,7 +200,13 @@ export default function CartScreen() {
                     }}
                     disabled={!canPlus}
                   >
-                    <Text style={[styles.qtyText, styles.plusText, !canPlus && styles.disabledText]}>
+                    <Text
+                      style={[
+                        styles.qtyText,
+                        styles.plusText,
+                        !canPlus && styles.disabledText,
+                      ]}
+                    >
                       +
                     </Text>
                   </TouchableOpacity>
@@ -218,7 +216,7 @@ export default function CartScreen() {
                   <Feather name="trash" size={20} color="#936B38" />
                 </TouchableOpacity>
               </View>
-            </View>
+            </TouchableOpacity>
           );
         }}
       />
