@@ -32,7 +32,7 @@ export default function BookListScreen() {
   const { width: screenWidth } = useWindowDimensions();
   const isDesktop = Platform.OS === 'web' && screenWidth > 768;
 
-  // Base card width (including any desired spacing)
+  // Base card width (including side margins)
   const CARD_WIDTH = 180;
   const numColumns = Math.max(1, Math.floor(screenWidth / CARD_WIDTH));
 
@@ -91,7 +91,7 @@ export default function BookListScreen() {
 
       {/* Header */}
       <View style={styles.sectionHeader}>
-        <Text style={styles.sectionTitle}>All</Text>
+        <Text style={styles.sectionTitle}>All</n"><Text>
         <View style={styles.sectionLine} />
       </View>
 
@@ -102,7 +102,7 @@ export default function BookListScreen() {
         numColumns={numColumns}
         key={numColumns} // rerender on breakpoint change
         columnWrapperStyle={{
-          justifyContent: isDesktop ? 'flex-start' : 'space-between',
+          justifyContent: 'flex-start',
           paddingHorizontal: 16,
           marginBottom: 20,
         }}
@@ -112,11 +112,9 @@ export default function BookListScreen() {
           const qty = inCart ? inCart.quantity : 0;
           const canAdd = item.stock > 0 && qty < item.stock;
           return (
-            <View
-              style={[
+            <View style={[
                 styles.bookCard,
-                { width: CARD_WIDTH - (isDesktop ? 20 : 0) },
-                isDesktop && styles.desktopCardMargin,
+                { width: CARD_WIDTH - 16 },
               ]}
             >
               <TouchableOpacity onPress={() => navigation.navigate('Book', { book: item })}>
@@ -164,8 +162,7 @@ const styles = StyleSheet.create({
   sectionHeader:{ marginHorizontal:16, marginTop:10, marginBottom:6 },
   sectionTitle:{ fontSize:16, fontWeight:'600', color:'#936B38', marginBottom:4 },
   sectionLine:{ height:1, backgroundColor:'#ccc', width:'100%' },
-  bookCard:{ backgroundColor:'#fff', borderRadius:16, overflow:'hidden', elevation:2, paddingBottom:10 },
-  desktopCardMargin:{ marginLeft:8, marginRight:8 },
+  bookCard:{ backgroundColor:'#fff', borderRadius:16, overflow:'hidden', elevation:2, paddingBottom:10, marginHorizontal:8 },
   bookImage:{ width:'100%', height:160 },
   bookTitle:{ padding:10, fontSize:14, fontWeight:'600', color:'#333' },
   bookMeta:{ paddingHorizontal:10, fontSize:12, color:'#666' },
