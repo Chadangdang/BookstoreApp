@@ -1,4 +1,3 @@
-// src/screens/BookListScreen.tsx
 import React, { useState } from 'react';
 import {
   View,
@@ -11,6 +10,7 @@ import {
   SafeAreaView,
   Alert,
   useWindowDimensions,
+  Platform,
 } from 'react-native';
 import {
   useNavigation,
@@ -29,8 +29,9 @@ export default function BookListScreen() {
   const route      = useRoute();
   const insets     = useSafeAreaInsets();
   const { width: screenWidth } = useWindowDimensions();
+  const isDesktop = Platform.OS === 'web' && screenWidth > 768;
 
-  // 1. “Mobile” card width (including right margin)
+  // 1. “Mobile” card width (including left/right margin)
   const CARD_WIDTH = 180;
   // 2. Compute how many cards fit per row
   const numColumns = Math.max(1, Math.floor(screenWidth / CARD_WIDTH));
@@ -133,7 +134,8 @@ export default function BookListScreen() {
             <View
               style={[
                 styles.bookCard,
-                { width: CARD_WIDTH - 16 /* subtract horizontal spacing */ }
+                { width: CARD_WIDTH - (isDesktop ? 16 : 0) },
+                isDesktop && styles.desktopCardMargin,
               ]}
             >
               <TouchableOpacity
@@ -174,14 +176,11 @@ export default function BookListScreen() {
       />
 
       {/* Bottom Navigation */}
-      <View style={[styles.bottomNav, { paddingBottom: insets.bottom }]}>
+      <View style={[styles.bottomNav, { paddingBottom: insets.bottom }]}>  
         {['Home', 'BookList', 'User'].map(routeName => {
           const isActive = routeName === 'BookList';
           return (
-            <TouchableOpacity
-              key={routeName}
-              onPress={() => navigation.navigate(routeName)}
-            >
+            <TouchableOpacity key={routeName} onPress={() => navigation.navigate(routeName)}>
               <View style={isActive ? styles.activeCircle : styles.iconWrapper}>
                 <Feather
                   name={
@@ -241,6 +240,8 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     elevation: 2,
     paddingBottom: 10,
+  },
+  desktopCardMargin: {
     marginRight: 8,
     marginLeft: 8,
   },
