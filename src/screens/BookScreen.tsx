@@ -9,6 +9,7 @@ import {
   Image,
   TouchableOpacity,
   Alert,
+  ScrollView,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Feather, Ionicons } from '@expo/vector-icons';
@@ -20,14 +21,9 @@ export default function BookScreen({ route }: any) {
   const { book } = route.params;
   const insets = useSafeAreaInsets();
 
-  // pull cart & addToCart from context
   const { cart, addToCart } = useCart();
-
-  // find how many of this book are already in cart
   const existing = cart.find(item => item.id === book.id);
   const cartQty = existing ? existing.quantity : 0;
-
-  // determine if we can add more
   const canAdd = cartQty < book.stock;
 
   const handleAdd = () => {
@@ -71,39 +67,39 @@ export default function BookScreen({ route }: any) {
         />
       </View>
 
-      {/* Book Cover */}
-      {book.cover && (
-        <Image source={{ uri: book.cover }} style={styles.bookImage} resizeMode="cover" />
-      )}
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        {/* Book Cover */}
+        {book.cover && (
+          <Image source={{ uri: book.cover }} style={styles.bookImage} resizeMode="cover" />
+        )}
 
-      {/* Book Info */}
-      <View style={styles.infoSection}>
-        <Text style={styles.title}>{book.title}</Text>
-        <Text style={styles.details}>Author: {book.author}</Text>
-        <Text style={styles.details}>Publisher: {book.publisher}</Text>
-        <Text style={styles.details}>ISBN: {book.ISBN}</Text>
+        {/* Book Info */}
+        <View style={styles.infoSection}>
+          <Text style={styles.title}>{book.title}</Text>
+          <Text style={styles.details}>Author: {book.author}</Text>
+          <Text style={styles.details}>Publisher: {book.publisher}</Text>
+          <Text style={styles.details}>ISBN: {book.ISBN}</Text>
 
-        {/* Stock & Price */}
-        <View style={styles.bottomRow}>
-          <Text style={styles.stockText}>Remaining: {book.stock} left</Text>
-          <Text style={styles.priceText}>{book.price} USD</Text>
+          <View style={styles.bottomRow}>
+            <Text style={styles.stockText}>Remaining: {book.stock} left</Text>
+            <Text style={styles.priceText}>{book.price} USD</Text>
+          </View>
+
+          <TouchableOpacity
+            style={[styles.cartButton, !canAdd && styles.cartButtonDisabled]}
+            onPress={handleAdd}
+            disabled={!canAdd}
+          >
+            <Text style={styles.cartButtonText}>
+              {book.stock === 0
+                ? 'Sold Out'
+                : canAdd
+                ? 'Add to Cart'
+                : 'Max in Cart'}
+            </Text>
+          </TouchableOpacity>
         </View>
-
-        {/* Add to Cart */}
-        <TouchableOpacity
-          style={[styles.cartButton, !canAdd && styles.cartButtonDisabled]}
-          onPress={handleAdd}
-          disabled={!canAdd}
-        >
-          <Text style={styles.cartButtonText}>
-            {book.stock === 0
-              ? 'Sold Out'
-              : canAdd
-              ? 'Add to Cart'
-              : 'Max in Cart'}
-          </Text>
-        </TouchableOpacity>
-      </View>
+      </ScrollView>
 
       {/* Bottom Nav */}
       <View style={[styles.bottomNav, { paddingBottom: -7 + insets.bottom }]}>
@@ -134,6 +130,9 @@ export default function BookScreen({ route }: any) {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F9F5F2' },
+  scrollContent: {
+    paddingBottom: 120, // prevent cut-off from bottom nav
+  },
   topBar: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -154,7 +153,7 @@ const styles = StyleSheet.create({
     aspectRatio: 1,
     backgroundColor: '#EADDCB',
   },
-  infoSection: { backgroundColor: '#F9F5F2', padding: 20, flex: 1 },
+  infoSection: { backgroundColor: '#F9F5F2', padding: 20 },
   title: {
     fontSize: 22,
     fontWeight: '700',
