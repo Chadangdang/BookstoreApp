@@ -32,9 +32,8 @@ export default function BookListScreen() {
   const { width: screenWidth } = useWindowDimensions();
   const isDesktop = Platform.OS === 'web' && screenWidth > 768;
 
-  // “Mobile” card width (including margins)
+  // Base card width (including any desired spacing)
   const CARD_WIDTH = 180;
-  // Compute how many cards fit per row
   const numColumns = Math.max(1, Math.floor(screenWidth / CARD_WIDTH));
 
   const initialQuery = (route.params as any)?.query || '';
@@ -53,7 +52,6 @@ export default function BookListScreen() {
     }, [])
   );
 
-  // Filter & sort
   const filtered = books.filter(book =>
     book.title.toLowerCase().includes(search.toLowerCase()) ||
     book.author.toLowerCase().includes(search.toLowerCase()) ||
@@ -105,7 +103,7 @@ export default function BookListScreen() {
         key={numColumns} // rerender on breakpoint change
         columnWrapperStyle={{
           justifyContent: isDesktop ? 'flex-start' : 'space-between',
-          paddingHorizontal: isDesktop ? 16 : 0,
+          paddingHorizontal: 16,
           marginBottom: 20,
         }}
         contentContainerStyle={{ paddingBottom: 120 + insets.bottom }}
@@ -117,7 +115,7 @@ export default function BookListScreen() {
             <View
               style={[
                 styles.bookCard,
-                { width: CARD_WIDTH - (isDesktop ? 16 : 0) },
+                { width: CARD_WIDTH - (isDesktop ? 20 : 0) },
                 isDesktop && styles.desktopCardMargin,
               ]}
             >
