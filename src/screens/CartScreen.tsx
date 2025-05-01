@@ -113,7 +113,7 @@ export default function CartScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Top Bar w/ Back + Search */}
+      {/* Top Bar */}
       <View style={styles.topBar}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
           <Feather name="arrow-left" size={24} color="#444" />
@@ -153,11 +153,7 @@ export default function CartScreen() {
           const canPlus = item.quantity < stock;
 
           return (
-            <TouchableOpacity
-              style={styles.cartCard}
-              onPress={() => navigation.navigate('Book', { book: item })}
-              activeOpacity={0.9}
-            >
+            <View style={styles.cartCard}>
               <View style={styles.cardRow}>
                 <Checkbox
                   value={selectedItems.includes(item.id)}
@@ -166,9 +162,23 @@ export default function CartScreen() {
                   color={selectedItems.includes(item.id) ? '#6B4226' : undefined}
                 />
 
-                <Image source={{ uri: item.cover }} style={styles.bookImage} />
+                {/* Clickable Image */}
+                <TouchableOpacity
+                  onPress={() => navigation.navigate('Book', { book: item })}
+                  activeOpacity={0.8}
+                >
+                  <Image source={{ uri: item.cover }} style={styles.bookImage} />
+                </TouchableOpacity>
+
                 <View style={{ flex: 1, marginLeft: 10 }}>
-                  <Text style={styles.bookTitle}>{item.title}</Text>
+                  {/* Clickable Title */}
+                  <TouchableOpacity
+                    onPress={() => navigation.navigate('Book', { book: item })}
+                    activeOpacity={0.8}
+                  >
+                    <Text style={styles.bookTitle}>{item.title}</Text>
+                  </TouchableOpacity>
+
                   <Text style={styles.bookAuthor}>Author: {item.author}</Text>
                   <Text style={styles.bookStock}>Stock: {stock} left</Text>
                   <Text style={styles.bookPrice}>${item.price.toFixed(2)}</Text>
@@ -216,12 +226,12 @@ export default function CartScreen() {
                   <Feather name="trash" size={20} color="#936B38" />
                 </TouchableOpacity>
               </View>
-            </TouchableOpacity>
+            </View>
           );
         }}
       />
 
-      {/* Floating Footer */}
+      {/* Checkout Footer */}
       <View
         style={[
           styles.footerContainer,
@@ -289,7 +299,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     borderRadius: 12,
   },
-
   cartCard: {
     backgroundColor: '#E9D8C8',
     marginHorizontal: 16,
@@ -298,7 +307,6 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
   cardRow: { flexDirection: 'row', alignItems: 'center' },
-
   checkbox: {
     marginRight: 10,
     width: 18,
@@ -308,13 +316,11 @@ const styles = StyleSheet.create({
     borderWidth: 1.5,
     backgroundColor: '#fff',
   },
-
   bookImage: { width: 60, height: 90, borderRadius: 10 },
   bookTitle: { fontSize: 16, fontWeight: '600', color: '#6B4226' },
   bookAuthor: { fontSize: 12, color: '#333', marginTop: 4 },
   bookStock: { fontSize: 12, color: '#444', marginTop: 4 },
   bookPrice: { fontSize: 14, color: '#6B4226', fontWeight: '500', marginTop: 4 },
-
   qtyControl: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -328,12 +334,10 @@ const styles = StyleSheet.create({
   },
   qtyText: { fontSize: 16, fontWeight: 'bold', color: '#444' },
   qtyCount: { marginHorizontal: 6, fontSize: 16, fontWeight: '500', color: '#444' },
-
   plusBtn: { backgroundColor: '#936B38' },
   plusText: { color: '#fff' },
   disabledBtn: { backgroundColor: '#ccc' },
   disabledText: { color: '#888' },
-
   footerContainer: {
     position: 'absolute',
     left: 0,
@@ -354,7 +358,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   checkoutText: { color: '#fff', fontSize: 16 },
-
   bottomNav: {
     position: 'absolute',
     bottom: 0,
