@@ -10,6 +10,7 @@ import {
   StyleSheet,
   SafeAreaView,
   Alert,
+  useWindowDimensions,
 } from 'react-native';
 import {
   useNavigation,
@@ -25,22 +26,25 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function BookListScreen() {
   const navigation = useNavigation();
-  const route = useRoute();
-  const initialQuery = (route.params as any)?.query || '';
+  const route      = useRoute();
+  const insets     = useSafeAreaInsets();
+  const { width: screenWidth } = useWindowDimensions();
 
-  const [books, setBooks] = useState<Book[]>([]);
+  // 1. “Mobile” card width (including right margin)
+  const CARD_WIDTH = 180;
+  // 2. Compute how many cards fit per row
+  const numColumns = Math.max(1, Math.floor(screenWidth / CARD_WIDTH));
+
+  const initialQuery = (route.params as any)?.query || '';
+  const [books, setBooks]   = useState<Book[]>([]);
   const [search, setSearch] = useState(initialQuery);
   const { cart, addToCart } = useCart();
-  const insets = useSafeAreaInsets();
 
   useFocusEffect(
     React.useCallback(() => {
       const fetchBooks = async () => {
         const snapshot = await getDocs(collection(db, 'books'));
-        const list = snapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data(),
-        } as Book));
+        const list = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Book));
         setBooks(list);
       };
       fetchBooks();
@@ -55,7 +59,7 @@ export default function BookListScreen() {
     book.ISBN.toLowerCase().includes(search.toLowerCase())
   );
 
-  // split into available vs sold-out
+  // split available vs sold-out
   const available = filtered.filter(book => book.stock > 0);
   const soldOut   = filtered.filter(book => book.stock === 0);
   const displayList = [...available, ...soldOut];
@@ -108,12 +112,17 @@ export default function BookListScreen() {
         <View style={styles.sectionLine} />
       </View>
 
-      {/* Book Grid */}
+      {/* Responsive Book Grid */}
       <FlatList
         data={displayList}
         keyExtractor={item => item.id}
-        numColumns={2}
-        columnWrapperStyle={styles.bookRow}
+        numColumns={numColumns}
+        key={numColumns} // force re-layout when columns change
+        columnWrapperStyle={{
+          justifyContent: 'flex-start',
+          paddingHorizontal: 16,
+          marginBottom: 20,
+        }}
         contentContainerStyle={{ paddingBottom: 120 + insets.bottom }}
         renderItem={({ item }) => {
           const inCart = cart.find(x => x.id === item.id);
@@ -121,18 +130,24 @@ export default function BookListScreen() {
           const canAdd = item.stock > 0 && qty < item.stock;
 
           return (
-            <View style={styles.bookCard}>
+            <View
+              style={[
+                styles.bookCard,
+                { width: CARD_WIDTH - 16 /* subtract horizontal spacing */ }
+              ]}
+            >
               <TouchableOpacity
                 onPress={() => navigation.navigate('Book', { book: item })}
               >
-                {item.cover
-                  ? <Image
-                      source={{ uri: item.cover }}
-                      style={styles.bookImage}
-                      resizeMode="cover"
-                    />
-                  : <View style={[styles.bookImage, { backgroundColor: '#ccc' }]} />
-                }
+                {item.cover ? (
+                  <Image
+                    source={{ uri: item.cover }}
+                    style={styles.bookImage}
+                    resizeMode="cover"
+                  />
+                ) : (
+                  <View style={[styles.bookImage, { backgroundColor: '#ccc' }]} />
+                )}
                 <Text style={styles.bookTitle} numberOfLines={2}>
                   {item.title}
                 </Text>
@@ -220,18 +235,13 @@ const styles = StyleSheet.create({
     backgroundColor: '#ccc',
     width: '100%',
   },
-  bookRow: {
-    justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    marginBottom: 20,
-  },
   bookCard: {
-    width: '47%',
     backgroundColor: '#fff',
     borderRadius: 16,
     overflow: 'hidden',
     elevation: 2,
     paddingBottom: 10,
+    marginRight: 16, // spacing between cards
   },
   bookImage: {
     width: '100%',
