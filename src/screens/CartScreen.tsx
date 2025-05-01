@@ -155,7 +155,7 @@ export default function CartScreen() {
           return (
             <TouchableOpacity
               style={styles.cartCard}
-              onPress={() => navigation.navigate('BookScreen', { book: item })}
+              onPress={() => navigation.navigate('Book', { book: item })}
               activeOpacity={0.9}
             >
               <View style={styles.cardRow}>
