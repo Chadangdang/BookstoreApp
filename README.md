@@ -6,7 +6,7 @@
 
 * 6522770591 Chadang Phummarin
 * 6522770864 Punyawee Poungsri
-* 6522781986 Wichita Wongwichit
+* 6522771672 Wichuon Charoensombat
 
 ---
 
